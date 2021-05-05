@@ -4,12 +4,12 @@ import java.util.concurrent.TimeUnit;
 
 class Screen {
 
-    synchronized void showFlower() throws InterruptedException{
+    static synchronized void showFlower() throws InterruptedException{
         TimeUnit.SECONDS.sleep(4);
         System.out.println("----showing flower");
     }
 
-    synchronized void showPeople() throws InterruptedException{
+    static synchronized void showPeople() throws InterruptedException{
         System.out.println("----showing people");
     }
 
@@ -20,12 +20,12 @@ class Screen {
 }
 
 /**
- * 线程8锁，线程A先启动，线程B后启动。先显示花还是人?
+ * 线程8锁，线程A先启动，2秒后线程B启动。先显示花还是人?
  * 1. 标准访问：花
- * 2. 花暂停4秒：花
+ * 2. 花暂停4秒：花 （后续都暂停4秒）
  * 3. 增加一个普通方法welcome: 先显示hello
- * 4. 两个Screen对象
- * 5. 两个静态同步方法，两个Screen对象
+ * 4. 两个Screen对象：人
+ * 5. 两个静态同步方法，两个Screen对象：花
  * 6. 两个静态同步方法，一个Screen对象
  * 7. 一个普通同步方法，一个静态同步方法，两个Screen对象
  * 8. 一个普通同步方法，一个静态同步方法，一个Screen对象
