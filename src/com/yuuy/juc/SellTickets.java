@@ -1,14 +1,25 @@
 package com.yuuy.juc;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 // 资源类
 class Ticket {
 
     private int rest = 100;
+    private Lock lock = new ReentrantLock();
 
-    public synchronized void sell() {
-        if (rest > 0) {
-            System.out.println(Thread.currentThread().getName() + "卖出了第" +
-                    rest-- + "张票，剩余" + rest);
+    public void sell() {
+        lock.lock();
+        try{
+            if (rest > 0) {
+                System.out.println(Thread.currentThread().getName() + "卖出了第" +
+                        rest-- + "张票，剩余" + rest);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
         }
     }
 }
