@@ -1,6 +1,7 @@
 package com.yuuy.juc;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * 1. HashSet is thread unsafe.
@@ -12,7 +13,7 @@ import java.util.*;
 public class CollectionNotSafe {
 
     public static void main(String[] args) {
-        Set<String> set = Collections.synchronizedSet(new HashSet<>());
+        Set<String> set = new CopyOnWriteArraySet<>();
 
         for (int i = 0; i < 100; i++) {
             new Thread(() -> {
