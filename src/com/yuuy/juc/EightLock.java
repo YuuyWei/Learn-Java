@@ -34,6 +34,7 @@ public class EightLock {
 
     public static void main(String[] args) throws InterruptedException {
         Screen screen = new Screen();
+        Screen screen2 = new Screen();
 
         new Thread(() -> {
 
@@ -49,8 +50,9 @@ public class EightLock {
         new Thread(() -> {
 
             try {
+                screen2.showPeople();
 //                screen.showPeople();
-                screen.welcome();
+//                screen.welcome();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
