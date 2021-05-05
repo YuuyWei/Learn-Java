@@ -9,7 +9,7 @@ class Screen {
         System.out.println("----showing flower");
     }
 
-    static synchronized void showPeople() throws InterruptedException{
+    synchronized void showPeople() throws InterruptedException{
         System.out.println("----showing people");
     }
 
@@ -26,9 +26,9 @@ class Screen {
  * 3. 增加一个普通方法welcome: 先显示hello
  * 4. 两个Screen对象：人
  * 5. 两个静态同步方法，两个Screen对象：花
- * 6. 两个静态同步方法，一个Screen对象
- * 7. 一个普通同步方法，一个静态同步方法，两个Screen对象
- * 8. 一个普通同步方法，一个静态同步方法，一个Screen对象
+ * 6. 两个静态同步方法，一个Screen对象：花
+ * 7. 一个普通同步方法，一个静态同步方法，两个Screen对象：人
+ * 8. 一个普通同步方法，一个静态同步方法，一个Screen对象：人
  */
 public class EightLock {
 
