@@ -70,7 +70,7 @@ public class ThreadWaitNotifyDemo {
         new Thread(() -> {
             for (int i = 0; i < 10; i++) {
                 try {
-                    sharingData.increment();
+                    sharingData.decrement();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
