@@ -50,8 +50,8 @@ public class EightLock {
         new Thread(() -> {
 
             try {
-                screen2.showPeople();
-//                screen.showPeople();
+//                screen2.showPeople();
+                screen.showPeople();
 //                screen.welcome();
             } catch (InterruptedException e) {
                 e.printStackTrace();
