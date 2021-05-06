@@ -6,6 +6,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ 读写锁是由两个锁组合而来，使得资源的写入具有排他性而多线程读取性能不受影响：
+ 1. read lock 加在只读操作上时，只要没有写入线程，只读操作可以由多个线程同时进行。
+ 2. write lock 加在写入操作上，具有排他性。
+ */
 class MyCache {
     private volatile Map<String, Object> map = new HashMap<>();
     private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
