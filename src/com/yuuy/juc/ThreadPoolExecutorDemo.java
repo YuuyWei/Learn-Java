@@ -29,9 +29,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class ThreadPoolExecutorDemo {
     public static void main(String[] args) {
-//        ExecutorService threadPool = Executors.newFixedThreadPool(5); // 固定数量
+        ExecutorService threadPool = Executors.newFixedThreadPool(5); // 固定数量
 //        ExecutorService threadPool = Executors.newCachedThreadPool(); // 数量可调整
-        ExecutorService threadPool = Executors.newSingleThreadExecutor(); // 单一线程池
+//        ExecutorService threadPool = Executors.newSingleThreadExecutor(); // 单一线程池
 
         try {
             for (int i = 0; i < 10; i++) {

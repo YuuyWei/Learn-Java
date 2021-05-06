@@ -16,7 +16,8 @@ public class CollectionNotSafe {
 
     public static void main(String[] args) {
 //        Map<String, String> map = new ConcurrentHashMap<>();
-        Map<String, String> map = Collections.synchronizedMap(new HashMap<>());
+//        Map<String, String> map = Collections.synchronizedMap(new HashMap<>());
+        Map<String, String> map = new HashMap<>();
 
         for (int i = 0; i < 100; i++) {
             new Thread(() -> {
