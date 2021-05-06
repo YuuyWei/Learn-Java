@@ -22,12 +22,12 @@ class MyThread implements Callable<Integer> {
  */
 public class CallableDemo {
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        FutureTask futureTask = new FutureTask(new MyThread());
-//        FutureTask futureTask = new FutureTask(() -> {
-//            System.out.println(Thread.currentThread().getName() + "****Coming here");
-//            TimeUnit.SECONDS.sleep(4);
-//            return 1024;
-//        });
+//        FutureTask futureTask = new FutureTask(new MyThread());
+        FutureTask futureTask = new FutureTask(() -> {
+            System.out.println(Thread.currentThread().getName() + "****Coming here");
+            TimeUnit.SECONDS.sleep(4);
+            return 1024;
+        });
 
         // 会缓存结果，不会计算两次
         new Thread(futureTask, "A").start();
