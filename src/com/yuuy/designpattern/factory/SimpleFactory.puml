@@ -1,0 +1,17 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface Product
+
+Client -> Product : uses
+Client .> Factory : request a new product
+Factory ..> Product : return a product
+
+class ConcreteProduct1 implements Product
+class ConcreteProduct2 implements Product
+
+class Factory {
++ createProduct() : Product
+}
+
+@enduml

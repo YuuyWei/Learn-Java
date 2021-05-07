@@ -1,13 +1,13 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-Client -> Singleton
-Singleton -> Singleton
+Client o- Singleton
+Singleton *- Singleton
 
 class Singleton {
-Singleton instance
+instance : Singleton
 Singleton()
-Singleton getInstance()
+getInstance()
 }
 
 @enduml

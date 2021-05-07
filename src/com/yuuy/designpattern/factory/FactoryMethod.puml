@@ -1,0 +1,18 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface Product
+class ConcreteProduct implements Product
+
+abstract class Factory {
+# factoryMethod() : Product
++ makeProduct() : Product
+}
+
+class ConcreteFactory extends Factory {
+# factoryMethod() : Product
+}
+
+ConcreteProduct <. ConcreteFactory : return a concrete product
+
+@enduml
