@@ -1,8 +1,6 @@
 package com.yuuy.juc;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * 阻塞队列
@@ -11,7 +9,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class BlockingQueueDemo {
     public static void main(String[] args) throws InterruptedException {
-        BlockingQueue<Integer> blockingQueue = new ArrayBlockingQueue<>(3);
+//        BlockingQueue<Integer> blockingQueue = new ArrayBlockingQueue<>(3);
+//        BlockingQueue<Integer> blockingQueue = new LinkedBlockingQueue<>();
+        BlockingQueue<Integer> blockingQueue = new SynchronousQueue<>();
 
         /*
         当队列满时调用add或者当队列空时调用remove会抛出异常

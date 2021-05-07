@@ -1,8 +1,6 @@
 package com.yuuy.juc;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Java线程池
@@ -25,13 +23,26 @@ import java.util.concurrent.TimeUnit;
  *   TimeUnit unit 单位
  *   BlockingQueue<Runnable> workQueue 是等待队列
  *   ThreadFactory threadFactory 创建线程的工厂，一般用默认的就行
- *   RejectedExecutionHandler handler 线程的
+ *   RejectedExecutionHandler handler 线程的拒绝策略
  */
 public class ThreadPoolExecutorDemo {
     public static void main(String[] args) {
-        ExecutorService threadPool = Executors.newFixedThreadPool(5); // 固定数量
+//        ExecutorService threadPool = Executors.newFixedThreadPool(5); // 固定数量
 //        ExecutorService threadPool = Executors.newCachedThreadPool(); // 数量可调整
 //        ExecutorService threadPool = Executors.newSingleThreadExecutor(); // 单一线程池
+        ExecutorService threadPool = new ThreadPoolExecutor(
+                3,
+                5,
+                3,
+                TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(3),
+                Executors.defaultThreadFactory(),
+                new ThreadPoolExecutor.CallerRunsPolicy()
+        );
+//        RejectedExecutionHandler rejectedExecutionHandler = new ThreadPoolExecutor.AbortPolicy();
+//        RejectedExecutionHandler rejectedExecutionHandler = new ThreadPoolExecutor.DiscardOldestPolicy();
+//        RejectedExecutionHandler rejectedExecutionHandler = new ThreadPoolExecutor.CallerRunsPolicy();
+//        RejectedExecutionHandler rejectedExecutionHandler = new ThreadPoolExecutor.DiscardPolicy();
 
         try {
             for (int i = 0; i < 10; i++) {
