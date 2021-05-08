@@ -1,4 +1,4 @@
-package com.yuuy.designpattern.singleton;
+package com.yuuy.designpattern.creator.singleton;
 
 /**
  * 静态内部类

@@ -1,4 +1,4 @@
-package com.yuuy.designpattern.factory;
+package com.yuuy.designpattern.creator.factory;
 
 interface Vehicle{}
 class Bike implements Vehicle{}

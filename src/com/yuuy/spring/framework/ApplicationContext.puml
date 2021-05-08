@@ -1,0 +1,17 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class ApplicationContext {
+- singletonPool : ConcurrentHashMap
+- beanDefinitionMap : ConcurrentHashMap
++ ApplicationContext(AppConfig)
++ getBean() : Bean
+- scan()
+}
+
+class AppConfig
+
+ApplicationContext <-- Bean
+ApplicationContext <-- AppConfig
+
+@enduml
