@@ -1,4 +1,4 @@
-package com.yuuy.designpattern.creator.singleton;
+package com.yuuy.designpattern.creation.singleton;
 
 /**
  * 懒汉式

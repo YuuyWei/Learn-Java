@@ -1,26 +1,37 @@
 package com.yuuy.spring.framework;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.*;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Pattern;
 
 public class MyApplicationContext {
     // 配置类
     private Class configClass;
 
     // 单例池
-    private ConcurrentHashMap<String, Object> singletonPools = new ConcurrentHashMap<>();
+    private Map<String, Object> singletonPools = new ConcurrentHashMap<>();
 
-    private ConcurrentHashMap<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
+    // Bean 定义表
+    private Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
+
+    // BeanPostProcessor 列表
+    private List<String> beanPostProcessors = new CopyOnWriteArrayList<>();
 
     public MyApplicationContext(Class configClass) {
         this.configClass = configClass;
 
         scan(configClass);
 
+        // 必须等扫描完成才创建单例池
         createSingleton();
     }
 
@@ -32,7 +43,7 @@ public class MyApplicationContext {
         for (String beanName : beanDefinitionMap.keySet()) {
             BeanDefinition definition = beanDefinitionMap.get(beanName);
             if (definition.getScope() == "singleton") {
-                singletonPools.put(beanName, createBean(definition));
+                singletonPools.put(beanName, createBean(definition, beanName));
             }
         }
     }
@@ -66,10 +77,28 @@ public class MyApplicationContext {
                         .filter(f -> f.toString().endsWith(".class"))
                         .map( f -> getClass(f))
                         .filter(clazz -> clazz.isAnnotationPresent(Component.class))
-                        .forEach(clazz -> addToBeanDefinitionMap(clazz));
+                        .forEach(clazz -> register(clazz));
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void register(Class<?> clazz) {
+        String componentName = clazz.getDeclaredAnnotation(Component.class).value();
+        if (componentName.isBlank()) {
+            componentName = Pattern.compile("^([A-Z])")
+                    .matcher(clazz.getSimpleName())
+                    .replaceAll(matchResult -> matchResult.group(1).toLowerCase(Locale.ROOT));
+        }
+
+        registerBeanDefinition(clazz, componentName);
+        registerBeanPostProcessor(clazz, componentName);
+    }
+
+    private void registerBeanPostProcessor(Class<?> clazz, String componentName) {
+        if (BeanPostProcessor.class.isAssignableFrom(clazz)) {
+            beanPostProcessors.add(componentName);
         }
     }
 
@@ -81,7 +110,7 @@ public class MyApplicationContext {
      * 添加到beanDefinitionMap
      * @param clazz
      */
-    private void addToBeanDefinitionMap(Class<?> clazz) {
+    private void registerBeanDefinition(Class<?> clazz, String componentName) {
         String scope = "singleton";
 
         if (clazz.getDeclaredAnnotation(Scope.class) != null) {
@@ -91,7 +120,7 @@ public class MyApplicationContext {
             }
         }
 
-        beanDefinitionMap.put(clazz.getDeclaredAnnotation(Component.class).value(), new BeanDefinition(scope, clazz));
+        beanDefinitionMap.put(componentName, new BeanDefinition(scope, clazz));
     }
 
     /**
@@ -151,7 +180,7 @@ public class MyApplicationContext {
 
     /**
      * 获取指定名字的Bean
-     * 判断Bean的类型
+     * 判断Bean的Scope
      * 单例 -> 从单例池返回
      * 原型 -> 创建后返回
      *
@@ -164,7 +193,7 @@ public class MyApplicationContext {
             if (definition.getScope().equals("singleton")) {
                 return singletonPools.get(beanName);
             } else {
-                return createBean(definition);
+                return createBean(definition, beanName);
             }
         } else {
             throw new NullPointerException();
@@ -172,16 +201,70 @@ public class MyApplicationContext {
     }
 
     /**
-     * 创建原型Bean
+     * 根据 bean definition 创建原型Bean
+     *
+     * 实现依赖注入
+     *
+     * 1. 调用构造函数创建 Bean
+     *
+     * 2. 找出 @Autowired 修饰的字段
+     *
+     * 3. 调用 getBean 方法获取实例
+     *
+     * 4. 使用set方法将值注入
+     * 如果是私有变量还要setAccessible(true)
      *
      * @param definition
+     * @param beanName
      * @return
      */
-    private Object createBean(BeanDefinition definition) {
+    private Object createBean(BeanDefinition definition, String beanName) {
         Class clazz = definition.getClazz();
 
         try {
             Object instance = clazz.getDeclaredConstructor().newInstance();
+
+            for (Field declaredField : clazz.getDeclaredFields()) {
+                if (declaredField.isAnnotationPresent(Autowired.class)) {
+                    Object bean = getBean(declaredField.getName());
+                    if (bean == null) {
+                        throw new Exception("找不到Bean");
+                    }
+                    declaredField.setAccessible(true); // 不加这个会报错：无法修改私有属性
+                    declaredField.set(instance, bean);
+                }
+            }
+
+            // Aware 回调
+            if (instance instanceof  BeanNameAware) {
+                ((BeanNameAware) instance).setBeanName(beanName);
+            }
+
+            // 初始化前
+            for (String beanPostProcessorName : beanPostProcessors) {
+                BeanPostProcessor beanPostProcessor = (BeanPostProcessor) getBean(beanPostProcessorName);
+                if (beanPostProcessor == null) {
+
+                } else {
+                    beanPostProcessor.postProcessorBeforeInitialization(beanName, instance);
+                }
+            }
+
+            // 初始化
+            if (instance instanceof InitializeBean) {
+                ((InitializeBean) instance).afterPropertiesSet();
+            }
+
+            // 初始化后
+            for (String beanPostProcessorName : beanPostProcessors) {
+                BeanPostProcessor beanPostProcessor = (BeanPostProcessor) getBean(beanPostProcessorName);
+                if (beanPostProcessor == null) {
+
+                } else {
+                    beanPostProcessor.postProcessorAfterInitialization(beanName, instance);
+                }
+            }
+
             return instance;
         } catch (InstantiationException e) {
             e.printStackTrace();
@@ -190,6 +273,8 @@ public class MyApplicationContext {
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
