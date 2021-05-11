@@ -1,5 +1,6 @@
 package com.yuuy.designpattern.creation.singleton;
 
+
 /**
  * 饿汉式
  * 最简单的单例模式

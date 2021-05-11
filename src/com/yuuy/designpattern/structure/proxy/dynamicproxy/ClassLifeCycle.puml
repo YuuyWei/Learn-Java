@@ -1,0 +1,16 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+
+start
+:Loading;
+partition Linking {
+:Verification;
+:Preparation;
+:Resolution;
+}
+:Initialization;
+:Using;
+:Unloading;
+stop
+
+@enduml

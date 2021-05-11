@@ -5,6 +5,7 @@ package com.yuuy.designpattern.creation.singleton;
  * 延迟加载的单例模式
  * 对象在第一次获取时加载
  * 无锁，并且多线程下运行良好
+ * 使用序列化和反序列化会破坏单例，可以通过增加readResolve方法解决，但是仍会创建对象。
  */
 public class SICSingleton {
 
